@@ -9,6 +9,7 @@ export default function Cabecalho() {
         </Link>
         <nav className="navegacao">
           <Link href="/">Início</Link>
+          <Link href="/vagas">Vagas</Link>
           <Link href="/sobre">Sobre o Projeto</Link>
           <Link href="/contato">Contato</Link>
         </nav>

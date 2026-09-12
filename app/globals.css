@@ -127,6 +127,15 @@ a {
   }
 }
 
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
 /* Hero & Cards */
 .card-hero,
 .card-conteudo {
