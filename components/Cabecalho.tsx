@@ -12,6 +12,7 @@ export default function Cabecalho() {
           <Link href="/vagas">Vagas</Link>
           <Link href="/sobre">Sobre o Projeto</Link>
           <Link href="/contato">Contato</Link>
+          <Link href="/empresas">Empresas</Link>
         </nav>
       </div>
     </header>
