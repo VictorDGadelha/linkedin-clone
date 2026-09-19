@@ -1,17 +1,9 @@
 // FRENTE 1 · o contrato da equipe. Este arquivo define o formato de dados
 // utilizado por todas as frentes (Vaga, Empresa, Candidatura e Busca).
 
-export type Vaga = {
-  id: string;
-  titulo: string;
-  empresa: string;
-  empresaSlug: string; // Deve bater rigorosamente com os slugs em data/empresas.ts
-  area: string; // Front-end · Back-end · Dados · Mobile · QA · Design
-  senioridade: string; // Estágio · Júnior · Pleno
-  local: string; // Remoto · Híbrido · Presencial + cidade
-  aceitaIniciante: boolean; // Fundamental para o filtro e contadores da Frente 4
-  descricao: string; // No mínimo 300 caracteres para permitir o comportamento de "ver mais"
-};
+export type { Vaga } from "@/lib/tipos";
+import type { Vaga } from "@/lib/tipos";
+
 
 export const vagas: Vaga[] = [
   {

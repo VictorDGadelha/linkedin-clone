@@ -3,7 +3,7 @@
 // sem incluir JavaScript extra no pacote do cliente.
 
 import Link from "next/link";
-import type { Vaga } from "@/data/vagas";
+import type { Vaga } from "@/lib/tipos";
 
 export default function CardDeVaga({ vaga }: { vaga: Vaga }) {
   return (
