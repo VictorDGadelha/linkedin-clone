@@ -1,24 +1,20 @@
-import Link from "next/link";
 import { vagas } from "@/data/vagas";
+import CardDeVaga from "@/components/CardDeVaga";
+
+export const metadata = {
+  title: "Vagas Abertas | Leque de Vagas",
+  description: "Encontre vagas de tecnologia para quem está começando na carreira.",
+};
 
 export default function ListaDeVagas() {
   return (
     <section className="card-conteudo">
-      <h1 className="titulo-secao" style={{ marginBottom: '16px' }}>Vagas Abertas</h1>
-      <ul className="lista-vagas">
+      <h1 className="titulo-secao" style={{ marginBottom: "20px" }}>
+        Vagas Abertas
+      </h1>
+      <ul className="lista-vagas" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
         {vagas.map((vaga) => (
-          <li key={vaga.id} className="card-item" style={{ marginBottom: '16px', listStyle: 'none' }}>
-            <h3>
-              <Link href={`/vagas/${vaga.id}`} className="link-externo" style={{ fontSize: '1.2rem' }}>
-                {vaga.titulo}
-              </Link>
-            </h3>
-            <p style={{ marginTop: '8px' }}>
-              <strong>Empresa:</strong> {vaga.empresa} <br/>
-              <strong>Local:</strong> {vaga.local} <br/>
-              <strong>Área:</strong> <span className="badge">{vaga.area}</span>
-            </p>
-          </li>
+          <CardDeVaga key={vaga.id} vaga={vaga} />
         ))}
       </ul>
     </section>
