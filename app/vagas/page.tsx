@@ -1,4 +1,4 @@
-import { vagas } from "@/data/vagas";
+import { listarVagas } from "@/lib/api";
 import CardDeVaga from "@/components/CardDeVaga";
 
 export const metadata = {
@@ -6,7 +6,9 @@ export const metadata = {
   description: "Encontre vagas de tecnologia para quem está começando na carreira.",
 };
 
-export default function ListaDeVagas() {
+export default async function ListaDeVagas() {
+  const vagas = await listarVagas();
+
   return (
     <section className="card-conteudo">
       <h1 className="titulo-secao" style={{ marginBottom: "20px" }}>

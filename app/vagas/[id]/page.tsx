@@ -1,33 +1,48 @@
-// SEM "use client" — Página executada no servidor (Server Component).
-// A página prepara os dados antes de enviar o HTML para o cliente,
-// importando os componentes interativos necessários apenas nas folhas da árvore.
+// app/vagas/[id]/page.tsx
+// FRENTE 1 · Página de Detalhe da Vaga
+// Mantida como Server Component ("marque a folha, não a raiz").
+// Na Aula 04, os dados são buscados via lib/api.ts e pré-gerados no build via generateStaticParams.
 
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { vagas } from "@/data/vagas";
+import { buscarVaga, listarVagas } from "@/lib/api";
 import BotaoCopiarLink from "@/components/BotaoCopiarLink";
 import DescricaoDaVaga from "@/components/DescricaoDaVaga";
 import FormularioDeCandidatura from "@/components/FormularioDeCandidatura";
 
-export async function generateMetadata({
-  params,
-}: {
+type Props = {
   params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const vaga = vagas.find((v) => v.id === id);
-  if (!vaga) return { title: "Vaga não encontrada" };
-  return { title: `${vaga.titulo} | Leque de Vagas` };
+};
+
+// ─── A LISTA DO QUE PRÉ-GERAR NO BUILD (SSG) ───────────────────────────
+// Informa ao Next.js todos os IDs existentes para pré-renderizar no build (símbolo ●).
+export async function generateStaticParams() {
+  const vagas = await listarVagas();
+  return vagas.map((vaga) => ({ id: String(vaga.id) }));
 }
 
-export default async function PaginaDaVaga({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+// ─── TÍTULO DINÂMICO E METADATA DA ABA ─────────────────────────────────
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const vaga = vagas.find((v) => v.id === id);
+  const vaga = await buscarVaga(id);
 
+  if (!vaga) {
+    return { title: "Vaga não encontrada · Leque de Vagas" };
+  }
+
+  return {
+    title: `${vaga.titulo} · ${vaga.empresa} | Leque de Vagas`,
+    description: vaga.descricao.slice(0, 150),
+  };
+}
+
+// ─── PÁGINA DE DETALHE ──────────────────────────────────────────────────
+export default async function PaginaDaVaga({ params }: Props) {
+  const { id } = await params;
+  const vaga = await buscarVaga(id);
+
+  // Se o ID não existir na fonte de dados, aciona a página de 404
   if (!vaga) {
     notFound();
   }
@@ -64,12 +79,12 @@ export default async function PaginaDaVaga({
         · {vaga.senioridade} · {vaga.local}
       </p>
 
-      {/* Componente de cliente: Botão de copiar link com memória */}
+      {/* Componente de cliente: Botão de copiar link com memória temporária */}
       <BotaoCopiarLink titulo={vaga.titulo} />
 
       <div style={{ marginTop: "16px", borderTop: "1px solid var(--border-color, #333)", paddingTop: "20px" }}>
         <h2 style={{ fontSize: "1.3rem", marginBottom: "8px" }}>Sobre a vaga</h2>
-        {/* Componente de cliente: Descrição com expansão/recolhimento e estado derivado */}
+        {/* Componente de cliente: Descrição com estado derivado (ver mais/ver menos) */}
         <DescricaoDaVaga texto={vaga.descricao} />
       </div>
 

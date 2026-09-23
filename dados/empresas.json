@@ -1,0 +1,32 @@
+[
+  {
+    "slug": "aurora-tech",
+    "nome": "Aurora Tech",
+    "sobre": "Empresa líder em desenvolvimento de produtos modernos com React e Next.js. Atua no desenvolvimento de soluções inovadoras de logística com equipes distribuídas e forte cultura de mentoria.",
+    "site": "https://auroratech.exemplo"
+  },
+  {
+    "slug": "nexus-digital",
+    "nome": "Nexus Digital",
+    "sobre": "Empresa especializada em soluções digitais escaláveis para negócios de todos os tamanhos, com foco em microsserviços, inteligência analítica e excelência em engenharia de software.",
+    "site": "https://nexusdigital.exemplo"
+  },
+  {
+    "slug": "orbit-software",
+    "nome": "Orbit Software",
+    "sobre": "Desenvolvedora de sistemas web inovadores focados em performance, segurança e experiência do usuário, atendendo clientes dos setores financeiro e de saúde.",
+    "site": "https://orbitsoftware.exemplo"
+  },
+  {
+    "slug": "pixel-labs",
+    "nome": "Pixel Labs",
+    "sobre": "Estúdio de tecnologia e design dedicado à criação de aplicações mobile e web modernas, experiências digitais interativas e produtos centrados no usuário.",
+    "site": "https://pixellabs.exemplo"
+  },
+  {
+    "slug": "vertex-solutions",
+    "nome": "Vertex Solutions",
+    "sobre": "Empresa de tecnologia que cria plataformas personalizadas para otimizar processos analíticos e fluxos de trabalho empresariais de alta complexidade.",
+    "site": "https://vertexsolutions.exemplo"
+  }
+]
