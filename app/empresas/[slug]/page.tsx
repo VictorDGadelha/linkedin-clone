@@ -1,46 +1,63 @@
 // app/empresas/[slug]/page.tsx
-import { empresas } from "@/data/empresas";
-import { vagas } from "@/data/vagas";
-import AbasDaEmpresa from "@/components/AbasDaEmpresa";
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import  { buscarEmpresa, listarEmpresas, listarVagas } from "@/lib/api";
+import AbasDaEmpresa from "@/components/AbasDaEmpresa";
 
-type PageProps = {
+type Props = {
   params: Promise<{ slug: string }>;
 };
 
-export default async function EmpresaDetalhePage({ params }: PageProps) {
+export async function generateStaticParams() {
+  const empresas = await listarEmpresas();
+  return empresas.map((empresa) => ({
+    slug: empresa.slug,
+  }));
+}
+
+export async function generateMetadata({
+  params,
+}: Props): Promise<Metadata> {
   const { slug } = await params;
 
-  // Acha a empresa específica pelo slug
-  const empresa = empresas.find((e: { slug: string }) => e.slug === slug);
+  const empresa = await buscarEmpresa(slug);
+
+  if (!empresa) {
+    return {
+      title: "Empresa não encontrada · Leque de Vagas",
+    };
+  }
+
+  return {
+    title: `${empresa.nome} · Leque de Vagas`,
+    description: empresa.sobre.slice(0, 150),
+  };
+}
+
+export default async function PaginaDaEmpresa({ params }: Props) {
+  const { slug } = await params;
+
+  const [empresa, vagas] = await Promise.all([
+    buscarEmpresa(slug),
+    listarVagas(),
+  ]);
 
   if (!empresa) {
     notFound();
   }
 
-  // Filtra as vagas daquela empresa
   const vagasDaEmpresa = vagas.filter(
-    (vaga: { empresaSlug: string }) => vaga.empresaSlug === slug,
+    (vaga) => vaga.empresaSlug === empresa.slug,
   );
 
   return (
-    <main className="max-w-4xl mx-auto px-4 py-10">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">{empresa.nome}</h1>
-        {empresa.site && (
-          <a
-            href={empresa.site}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline text-sm mt-1 inline-block"
-          >
-            Visitar site oficial &rarr;
-          </a>
-        )}
-      </div>
+    <section>
+      <h1>{empresa.nome}</h1>
 
-      {/* Renderiza o componente de abas client-side passando os dados */}
-      <AbasDaEmpresa sobre={empresa.sobre} vagas={vagasDaEmpresa} />
-    </main>
+      <AbasDaEmpresa
+        empresa={empresa}
+        vagas={vagasDaEmpresa}
+      />
+    </section>
   );
 }
