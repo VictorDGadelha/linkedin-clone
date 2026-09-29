@@ -1,10 +1,11 @@
 // lib/api.ts
 // FRENTE 1 · Camada centralizada de acesso a dados da aplicação.
 // Este é o ÚNICO arquivo do projeto que conhece a origem dos dados externos
-// E o ÚNICO que guarda os depósitos em memória desta semana.
+// e que fala diretamente com o Prisma para as vagas da aplicação.
 // As outras três frentes apenas importam e chamam estas funções.
 
 import type { Vaga, Empresa, Candidatura } from "@/lib/tipos";
+import { prisma } from "@/lib/prisma";
 import fs from "fs";
 import path from "path";
 
@@ -13,18 +14,9 @@ const FONTE =
   process.env.NEXT_PUBLIC_DADOS_URL ||
   "https://raw.githubusercontent.com/VictorDGadelha/linkedin-clone/main/dados";
 
-// ─── O DEPÓSITO ────────────────────────────────────────────────────────
-// A memória do PROCESSO. Some quando o servidor reinicia, e no site
-// publicado cada instância tem a sua. Isso não é gambiarra escondida: é a
-// peça que falta, e ela tem data — AULA 06, banco de dados.
-//
-// O que importa hoje é que ela mora AQUI, atrás das mesmas funções que o
-// resto do projeto já chama. Na aula 06, estas linhas viram um insert e
-// nenhuma ação, nenhum formulário e nenhuma página fica sabendo.
-const criadas: Vaga[] = [];
-const arquivadas = new Set<string>();
-const candidaturas: Candidatura[] = [];
+// Depósitos temporários para frentes que ainda não migraram para o banco nesta semana
 const editadas = new Map<string, Empresa>();
+const candidaturas: Candidatura[] = [];
 
 // ─── LEITURA — privadas ─────────────────────────────────────────────────
 // Vagas: revalidação a cada 60 segundos (novas oportunidades precisam aparecer rápido)
@@ -80,16 +72,18 @@ async function buscarEmpresasPublicadas(): Promise<Empresa[]> {
 
 /**
  * O NOME NÃO MUDA. Toda página do projeto chama esta função desde a aula
- * 04 — a listagem, o detalhe, o generateStaticParams, os números. Mudar o
- * que ela faz por dentro sem mudar a assinatura é exatamente a compra que
- * o lib/api.ts fez naquela semana, sendo usada agora.
+ * 04 — a listagem, o detalhe, o generateStaticParams, os números.
+ * Agora junta as vagas gravadas no SQLite com as vagas públicas.
  */
 export async function listarVagas(): Promise<Vaga[]> {
   const publicadas = await buscarVagasPublicadas();
 
-  return [...criadas, ...publicadas].filter(
-    (vaga) => !arquivadas.has(vaga.id)
-  ); // frente 4
+  const criadas = await prisma.vaga.findMany({
+    where: { arquivada: false }, // frente 4
+    orderBy: { criadaEm: "desc" },
+  });
+
+  return [...criadas, ...publicadas];
 }
 
 /**
@@ -97,13 +91,22 @@ export async function listarVagas(): Promise<Vaga[]> {
  * O Next.js agrupa requisições idênticas via Request Memoization, evitando buscas duplicadas.
  */
 export async function buscarVaga(id: string): Promise<Vaga | undefined> {
+  // Tenta buscar no banco primeiro
+  const doBanco = await prisma.vaga.findUnique({
+    where: { id },
+  });
+  if (doBanco && !doBanco.arquivada) {
+    return doBanco;
+  }
+
+  // Senão, procura nas vagas publicadas
   const vagas = await listarVagas();
   return vagas.find((vaga) => String(vaga.id) === String(id));
 }
 
 /**
  * Mesma ideia do lado das empresas: a frente 2 depende desta para que
- * guardarEmpresa grave num Map que esta função lê.
+ * guardarEmpresa grave num Map/banco que esta função lê.
  */
 export async function listarEmpresas(): Promise<Empresa[]> {
   const publicadas = await buscarEmpresasPublicadas();
@@ -121,23 +124,38 @@ export async function buscarEmpresa(
 }
 
 // ─── ESCRITA ───────────────────────────────────────────────────────────
-// Nenhuma delas é `async`, porque escrever em memória não espera nada.
-// Pôr `async` agora "para já ficar parecido com banco" é adivinhar o
-// futuro; na aula 06 o TypeScript aponta cada chamada que passa a
-// precisar de await, e o conserto leva cinco minutos.
 
-export function guardarVaga(vaga: Vaga) {
-  criadas.unshift(vaga); // no começo: a mais nova aparece primeiro
+/**
+ * O array saiu de cena. Uma palavra mudou a assinatura (async) — e o TypeScript
+ * aponta sozinho cada chamada que passou a precisar de await.
+ */
+export async function guardarVaga(vaga: Vaga): Promise<void> {
+  await prisma.vaga.create({
+    data: {
+      id: vaga.id,
+      titulo: vaga.titulo,
+      empresa: vaga.empresa,
+      empresaSlug: vaga.empresaSlug,
+      area: vaga.area,
+      senioridade: vaga.senioridade,
+      local: vaga.local,
+      aceitaIniciante: vaga.aceitaIniciante,
+      descricao: vaga.descricao,
+    },
+  });
 }
 
-export function arquivarVaga(id: string) {
-  arquivadas.add(id);
+export async function arquivarVaga(id: string): Promise<void> {
+  await prisma.vaga.update({
+    where: { id },
+    data: { arquivada: true },
+  });
 }
 
-export function guardarCandidatura(candidatura: Candidatura) {
+export function guardarCandidatura(candidatura: Candidatura): void {
   candidaturas.push(candidatura);
 }
 
-export function guardarEmpresa(empresa: Empresa) {
+export function guardarEmpresa(empresa: Empresa): void {
   editadas.set(empresa.slug, empresa);
 }

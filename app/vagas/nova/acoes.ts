@@ -44,7 +44,7 @@ export async function criarVaga(
     id: crypto.randomUUID(),
     empresa: empresa.nome,
   };
-  guardarVaga(vaga);
+  await guardarVaga(vaga);
 
   // 4. AVISE O CACHE. Sem esta linha a vaga existe e a listagem não
   //    mostra — porque na aula 04 vocês mandaram, por escrito, que ela
