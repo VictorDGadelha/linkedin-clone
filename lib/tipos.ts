@@ -14,6 +14,8 @@ export type Vaga = {
   local: string;
   aceitaIniciante: boolean;
   descricao: string;
+  criadaEm?: Date | string;
+  arquivada?: boolean;
 };
 
 export type Empresa = {

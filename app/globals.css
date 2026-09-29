@@ -496,3 +496,137 @@ form button[type="submit"]:disabled {
   cursor: pointer;
 }
 
+/* ─── Página /vagas/nova ─────────────────────────────────────── */
+.pagina-nova-vaga {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.titulo-nova-vaga {
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.subtitulo-nova-vaga {
+  color: var(--text-muted);
+  margin-bottom: 32px;
+  font-size: 0.95rem;
+}
+
+/* ─── Formulário de vaga ─────────────────────────────────────── */
+.form-vaga {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 0; /* reset do form label global */
+}
+
+.campo-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.campo-hint {
+  font-weight: 400;
+  color: var(--text-subtle);
+  font-size: 0.82rem;
+}
+
+.form-vaga input,
+.form-vaga select,
+.form-vaga textarea {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-main);
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+  margin-top: 0;
+}
+
+.form-vaga input:focus,
+.form-vaga select:focus,
+.form-vaga textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.form-vaga textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.form-vaga select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ba4b5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.input-erro {
+  border-color: #f24487 !important;
+}
+
+.msg-erro {
+  font-size: 0.83rem;
+  color: #f24487;
+  margin: 0;
+}
+
+.campo-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.93rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  margin-bottom: 0;
+}
+
+.campo-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  margin-top: 0;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+.btn-publicar {
+  align-self: flex-start;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-publicar:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-publicar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
