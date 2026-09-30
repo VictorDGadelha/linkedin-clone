@@ -23,10 +23,10 @@ export const EsquemaDaVaga = z.object({
 // Campo que não pode mudar não entra no esquema — assim, se alguém mandar
 // um slug no POST, ele é simplesmente ignorado.
 export const EsquemaDaEmpresa = z.object({
-  nome:  z.string().min(2, "O nome não pode ficar em branco."),
+  nome:  z.string().min(1, "O nome da empresa é obrigatório."),
   sobre: z.string()
-          .min(40, "Conte um pouco mais: pelo menos 40 caracteres.")
-          .max(600, "Passou de 600 caracteres."),
+          .min(20, "Conte um pouco mais: pelo menos 20 caracteres.")
+          .max(500, "O campo 'sobre' não pode exceder 500 caracteres."),
   site:  z.string().url("Precisa ser um endereço completo, com https://."),
 });
 
