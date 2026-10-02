@@ -24,3 +24,11 @@ model Vaga {
   arquivada       Boolean  @default(false)
 }
 
+// ─── frente 2 ───────────────────────────────────────────────
+model Empresa {
+  slug      String   @id
+  nome      String
+  sobre     String
+  site      String
+  editadaEm DateTime @updatedAt
+}

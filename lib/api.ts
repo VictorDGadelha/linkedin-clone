@@ -15,7 +15,6 @@ const FONTE =
   "https://raw.githubusercontent.com/VictorDGadelha/linkedin-clone/main/dados";
 
 // Depósitos temporários para frentes que ainda não migraram para o banco nesta semana
-const editadas = new Map<string, Empresa>();
 const candidaturas: Candidatura[] = [];
 
 // ─── LEITURA — privadas ─────────────────────────────────────────────────
@@ -110,17 +109,29 @@ export async function buscarVaga(id: string): Promise<Vaga | undefined> {
  */
 export async function listarEmpresas(): Promise<Empresa[]> {
   const publicadas = await buscarEmpresasPublicadas();
-  return publicadas.map((e) => editadas.get(e.slug) ?? e);
+
+  const editadas = await prisma.empresa.findMany();
+
+  const empresasDoBanco = new Map(editadas.map((empresa) => [empresa.slug, empresa]),);
+
+  return publicadas.map((empresa) => empresasDoBanco.get(empresa.slug) ?? empresa,);
 }
+
 
 /**
  * Busca uma empresa específica pelo seu slug.
  */
-export async function buscarEmpresa(
-  slug: string
-): Promise<Empresa | undefined> {
-  const empresas = await listarEmpresas();
-  return empresas.find((empresa) => empresa.slug === slug);
+
+export async function buscarEmpresa(slug: string): Promise<Empresa | undefined> {
+  const editada = await prisma.empresa.findUnique({where: { slug },});
+
+  if (editada) {
+    return editada;
+  }
+
+  const publicadas = await listarEmpresas();
+
+  return publicadas.find((empresa) => empresa.slug === slug);
 }
 
 // ─── ESCRITA ───────────────────────────────────────────────────────────
@@ -156,6 +167,20 @@ export function guardarCandidatura(candidatura: Candidatura): void {
   candidaturas.push(candidatura);
 }
 
-export function guardarEmpresa(empresa: Empresa): void {
-  editadas.set(empresa.slug, empresa);
-}
+export async function guardarEmpresa(empresa: Empresa): Promise<void> {
+  await prisma.empresa.upsert({
+    where: {
+      slug: empresa.slug,
+    },
+    update: {
+      nome: empresa.nome,
+      sobre: empresa.sobre,
+      site: empresa.site,
+    },
+    create: {
+      slug: empresa.slug,
+      nome: empresa.nome,
+      sobre: empresa.sobre,
+      site: empresa.site,
+    },
+  });}

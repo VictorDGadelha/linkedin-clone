@@ -38,7 +38,7 @@ export async function salvarEmpresa(
     };
   }
 
-  guardarEmpresa({
+  await guardarEmpresa({
     ...atual,
     ...analise.data,
   });
